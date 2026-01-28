@@ -1,0 +1,5 @@
+GEOparse
+pandas
+numpy
+pyyaml
+tqdm
