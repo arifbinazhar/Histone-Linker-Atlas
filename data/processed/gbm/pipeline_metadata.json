@@ -1,0 +1,16 @@
+{
+  "study_id": "gbm_tcga",
+  "molecular_profile_id": "acbc_mskcc_2015_mutations",
+  "timestamp": "2026-02-01 02:16:57",
+  "h1_genes_analyzed": [
+    "H1F0",
+    "HIST1H1A",
+    "HIST1H1B",
+    "HIST1H1C",
+    "HIST1H1D",
+    "HIST1H1E",
+    "H1FX"
+  ],
+  "total_mutations_found": 0,
+  "genes_with_mutations": []
+}

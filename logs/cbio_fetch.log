@@ -1,0 +1,38 @@
+2026-02-01 02:16:12,763 - __main__ - INFO - Initialized H1MutationAnalyzer
+2026-02-01 02:16:12,763 - __main__ - INFO - Output directory: data\processed\gbm
+2026-02-01 02:16:12,763 - __main__ - INFO - ======================================================================
+2026-02-01 02:16:12,763 - __main__ - INFO - H1 MUTATION ANALYSIS PIPELINE - TCGA GLIOBLASTOMA
+2026-02-01 02:16:12,763 - __main__ - INFO - ======================================================================
+2026-02-01 02:16:12,764 - __main__ - INFO - 
+[1/5] Discovering study...
+2026-02-01 02:16:12,764 - __main__ - INFO - Discovering correct study ID for Glioblastoma...
+2026-02-01 02:16:12,764 - __main__ - INFO - Trying study ID: gbm_tcga
+2026-02-01 02:16:14,387 - __main__ - INFO - 
+[2/5] Resolving molecular profile...
+2026-02-01 02:16:14,387 - __main__ - INFO - Resolving molecular profile for study: gbm_tcga...
+2026-02-01 02:16:15,145 - __main__ - INFO - Found 2431 molecular profiles
+2026-02-01 02:16:15,146 - __main__ - INFO - Found 529 mutation profiles
+2026-02-01 02:16:15,149 - __main__ - INFO -   Profile name: Mutations
+2026-02-01 02:16:15,150 - __main__ - INFO -   Data type: MAF
+2026-02-01 02:16:15,150 - __main__ - INFO - 
+[3/5] Fetching sample IDs...
+2026-02-01 02:16:15,150 - __main__ - INFO - Fetching sample IDs for study gbm_tcga...
+2026-02-01 02:16:15,433 - __main__ - INFO - Found 606 patients
+2026-02-01 02:16:57,204 - __main__ - INFO - Total samples collected: 100
+2026-02-01 02:16:57,204 - __main__ - INFO - TCGA-formatted samples: 100/100
+2026-02-01 02:16:57,205 - __main__ - INFO - Processing 50 samples
+2026-02-01 02:16:57,206 - __main__ - INFO - 
+[4/5] Fetching mutations...
+2026-02-01 02:16:57,206 - __main__ - INFO - Split 50 samples into 1 batches (batch size: 100)
+2026-02-01 02:16:57,207 - __main__ - INFO - Processing batch 1/1 (50 samples)
+2026-02-01 02:16:57,208 - __main__ - INFO - Fetching mutations for 50 samples...
+2026-02-01 02:16:57,513 - __main__ - ERROR - HTTP error 400: 400 Client Error:  for url: https://www.cbioportal.org/api/molecular-profiles/acbc_mskcc_2015_mutations/mutations/fetch
+2026-02-01 02:16:57,514 - __main__ - ERROR - Failed to fetch mutations for batch: 400 Client Error:  for url: https://www.cbioportal.org/api/molecular-profiles/acbc_mskcc_2015_mutations/mutations/fetch
+2026-02-01 02:16:57,515 - __main__ - INFO - Progress: 0 total mutations
+2026-02-01 02:16:57,515 - __main__ - WARNING - No mutations found for any H1 gene
+2026-02-01 02:16:57,548 - __main__ - INFO - 
+[5/5] Generating summary...
+2026-02-01 02:16:57,549 - __main__ - WARNING - No mutations to summarize - creating empty summary
+2026-02-01 02:16:57,605 - __main__ - INFO - ======================================================================
+2026-02-01 02:16:57,605 - __main__ - INFO - ANALYSIS COMPLETE
+2026-02-01 02:16:57,606 - __main__ - INFO - ======================================================================
