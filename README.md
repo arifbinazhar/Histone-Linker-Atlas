@@ -1,12 +1,17 @@
 
-# HistoneLinker-Atlas
+# Integrated analysis of linker histone dysregulation and genomic alterations across neurodevelopmental disorders and cancer
 
-A modular, reproducible data-mining pipeline for identifying disease-associated dysregulation and mutation patterns in linker histone (H1 family) genes across neurodevelopmental disorders and cancer.
+This project implements a reproducible bioinformatics pipeline to systematically map differential expression and genomic alterations of linker histone (H1 family) genes across disease contexts using primary transcriptomic (GEO) and cancer genomics (TCGA-GDC) datasets. The pipeline enables automated multi-omics integration to identify linker histones showing convergent evidence of dysregulation or alteration, providing a scalable data-mining framework to support hypothesis generation and experimental prioritization in chromatin biology and disease research.
 
-## Biological Motivation
-Linker histones (H1 variants) play a critical role in higher-order chromatin organization and transcriptional regulation. Increasing evidence suggests variant-specific dysregulation and mutation of H1 proteins in developmental disorders and malignancies, yet a systematic, cross-disease computational framework for prioritizing candidate histones for experimental validation is lacking.
+## Key Features
 
-This project addresses this gap by integrating public gene expression and mutation datasets into a unified, disease-centric discovery pipeline.
+- Automated ingestion of GEO transcriptomic datasets for phenotype-aware linker histone expression analysis
+- Direct integration of TCGA Glioblastoma mutation and copy number alteration data via NIH GDC API
+- Identification of disease-associated linker histone dysregulation across neurodevelopmental disorders and cancer
+- Integrated candidate ranking framework to prioritize linker histones for downstream experimental investigation
+- Modular, reproducible Python pipeline designed for extensibility to additional diseases and datasets
+
+
 
 ## Project Scope
 **Diseases:**
@@ -21,7 +26,7 @@ Disease → Dataset Fetching → Gene Filtering → Expression Analysis → Muta
 
 ## Installation
 ```bash
-git clone https://github.com/yourusername/HistoneLinker-Atlas.git
+git clone https://github.com/arifbinazhar/HistoneLinker-Atlas.git
 cd HistoneLinker-Atlas
 pip install -r requirements.txt
 
