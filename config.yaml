@@ -1,17 +1,18 @@
 
-diseases:
-  autism:
-    source: GEO
-  glioblastoma:
-    source: cBioPortal
-
 genes:
-  - H1F0
-  - HIST1H1A
-  - HIST1H1B
-  - HIST1H1C
-  - HIST1H1D
-  - HIST1H1E
-  - H1FX
+  - H1-1
+  - H1-2
+  - H1-3
+  - H1-4
+  - H1-5
+  - H1-10
+
+datasets:
+  autism_geo:
+    - GSE28521
+
+  gbm_tcga:
+    project: TCGA-GBM
+
 
 output_dir: data/processed
