@@ -90,4 +90,12 @@ This pipeline ensures reproducibility through:
 All results can be reproduced using the provided config.yaml.
 
 
+## Citation
+
+If you use this pipeline, please cite:
+
+Azhar AB. Histone-Linker-Atlas: Multi-Omics Pipeline for Linker Histone Dysregulation Analysis.
+GitHub, 2026.
+
+
 
