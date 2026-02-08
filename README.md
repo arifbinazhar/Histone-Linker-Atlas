@@ -59,20 +59,31 @@ utils/ → shared functions
 
 
 ## Installation
+
+Try running on google  colab by copy pasting the command given below
 ```bash
-git clone https://github.com/arifbinazhar/Histone-Linker-Atlas.git
-cd HistoneLinker-Atlas
-pip install -r requirements.txt
+!git clone https://github.com/arifbinazhar/Histone-Linker-Atlas.git
+!cd HistoneLinker-Atlas
+!pip install -r /content/Histone-Linker-Atlas/requirements.txt
 
+import os
+os.chdir('/content/Histone-Linker-Atlas')
+!python run_pipeline.py --disease all
 
+```
+
+```bash
 Usage
-python run_pipeline.py --disease autism
+!python run_pipeline.py --disease autism
+!python run_pipeline.py --disease dlbc
+!python run_pipeline.py --disease all
+
 
 Outputs
 Normalized expression matrices for H1 family genes
 Mutation frequency tables and variant summaries
-Ranked disease–histone association tables
-Publication-ready figures and reports
+Ranked disease-histone association tables
+Bar plot as well as a heatmap
 Intended Use
 This pipeline is designed as an internal research support tool to assist experimental chromatin biology labs in prioritizing linker histone variants and disease contexts for downstream functional validation.
 
