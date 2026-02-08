@@ -60,4 +60,18 @@ Publication-ready figures and reports
 Intended Use
 This pipeline is designed as an internal research support tool to assist experimental chromatin biology labs in prioritizing linker histone variants and disease contexts for downstream functional validation.
 
+```
+
+## Reproducibility
+
+This pipeline ensures reproducibility through:
+
+• Version-controlled code (GitHub)
+• Fixed dependency versions
+• Modular architecture
+• Deterministic execution
+
+All results can be reproduced using the provided config.yaml.
+
+
 
