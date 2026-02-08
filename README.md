@@ -72,6 +72,8 @@ os.chdir('/content/Histone-Linker-Atlas')
 
 ```
 
+The code below allows you to run the pipeline in parts
+
 ```bash
 Usage
 !python run_pipeline.py --disease autism
