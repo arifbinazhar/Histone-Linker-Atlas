@@ -1,7 +1,7 @@
 
 # Integrated analysis of linker histone dysregulation and genomic alterations across neurodevelopmental disorders (autism) and cancer
 
-This project implements a reproducible bioinformatics pipeline to systematically map differential expression and genomic alterations of linker histone (H1 family) genes across disease contexts using primary transcriptomic (GEO) and cancer genomics (TCGA-GDC) datasets. The pipeline enables automated multi-omics integration to identify linker histones showing convergent evidence of dysregulation or alteration, providing a scalable data-mining framework to support hypothesis generation and experimental prioritization in chromatin biology and disease research.
+This project implements a reproducible bioinformatics pipeline to systematically map **differential expression** and **genomic alterations** of linker histone (H1 family) genes across disease contexts using primary transcriptomic (*GEO*) and cancer genomics (*cBioPortal*) datasets. The pipeline enables automated multi-omics integration to identify linker histones showing convergent evidence of dysregulation or alteration, providing a scalable data-mining framework to support hypothesis generation and experimental prioritization in chromatin biology and disease research.
 
 ## Scientific Motivation
 
@@ -24,8 +24,8 @@ This enables hypothesis generation for chromatin-driven disease mechanisms.
 ## Key Features
 
 - Automated ingestion of GEO transcriptomic datasets for phenotype-aware linker histone expression analysis
-- Direct integration of TCGA Glioblastoma mutation and copy number alteration data via NIH GDC API
-- Identification of disease-associated linker histone dysregulation across neurodevelopmental disorders and cancer
+- Direct integration of cancer data from cBioPortal mutation and copy number alteration data.
+- Identification of disease-associated linker histone dysregulation across Autism and Diffuse Large B-Cell Lymphoma
 - Integrated candidate ranking framework to prioritize linker histones for downstream experimental investigation
 - Modular, reproducible Python pipeline designed for extensibility to additional diseases and datasets
 
@@ -34,7 +34,7 @@ This enables hypothesis generation for chromatin-driven disease mechanisms.
 ## Project Scope
 **Diseases:**
 - Autism Spectrum Disorder (GEO)
-- Glioblastoma (TCGA / cBioPortal)
+- Diffuse Large B-Cell Lymphoma (cBioPortal)
 
 **Target Genes:**
 - H1F0, HIST1H1A, HIST1H1B, HIST1H1C, HIST1H1D, HIST1H1E, H1FX
@@ -44,7 +44,7 @@ Disease → Dataset Fetching → Gene Filtering → Expression Analysis → Muta
 
 ## Installation
 ```bash
-git clone https://github.com/arifbinazhar/HistoneLinker-Atlas.git
+git clone https://github.com/arifbinazhar/Histone-Linker-Atlas.git
 cd HistoneLinker-Atlas
 pip install -r requirements.txt
 
