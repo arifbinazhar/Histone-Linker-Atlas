@@ -159,9 +159,12 @@ def process_cna(cna):
 
     cna_h1 = cna.loc[cna.index.intersection(H1_GENES)]
 
-    cna_binary = cna_h1.applymap(
-        lambda x: 1 if abs(x) >= 1 else 0
-    )
+    # cna_binary = cna_h1.applymap(
+    #     lambda x: 1 if abs(x) >= 1 else 0
+    # )
+
+    cna_binary = (cna_h1.abs() >= 1).astype(int)
+
 
     cna_summary = (
         cna_binary.sum(axis=1)
@@ -256,7 +259,7 @@ def save_outputs(cna, mutation, integrated):
 # MAIN
 # -------------------------
 
-def main():
+def run_dlbc_pipeline():
 
     sparse_clone()
 
@@ -281,4 +284,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_dlbc_pipeline()

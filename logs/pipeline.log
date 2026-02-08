@@ -1,2 +1,43 @@
 2026-02-08 18:19:40,907 — INFO — Pipeline started
 2026-02-08 18:19:40,908 — INFO — Running autism expression pipeline
+2026-02-09 03:34:37,691 — INFO — Pipeline started
+2026-02-09 03:34:37,693 — INFO — Running autism expression pipeline
+2026-02-09 03:38:55,181 — INFO — Pipeline started
+2026-02-09 03:38:55,182 — INFO — Running autism expression pipeline
+2026-02-09 03:38:55,183 — INFO — Autism expression data verified
+2026-02-09 03:38:55,183 — INFO — Running DLBC genomic alteration pipeline
+2026-02-09 03:38:55,183 — INFO — Normalizing DLBC alteration data
+2026-02-09 03:38:55,227 — INFO — DLBC normalization complete
+2026-02-09 03:38:55,227 — INFO — Running multi-omics integration pipeline
+2026-02-09 03:38:55,304 — INFO — Integration and ranking complete
+2026-02-09 03:38:55,305 — INFO — Pipeline finished
+2026-02-09 03:40:35,923 — INFO — Pipeline started
+2026-02-09 03:40:35,923 — INFO — Running autism expression pipeline
+2026-02-09 03:40:35,923 — INFO — Autism expression data verified
+2026-02-09 03:40:35,923 — INFO — Running DLBC genomic alteration pipeline
+2026-02-09 03:40:35,923 — INFO — Normalizing DLBC alteration data
+2026-02-09 03:40:35,929 — INFO — DLBC normalization complete
+2026-02-09 03:40:35,929 — INFO — Running multi-omics integration pipeline
+2026-02-09 03:40:35,942 — INFO — Integration and ranking complete
+2026-02-09 03:40:35,942 — INFO — Pipeline finished
+2026-02-09 03:49:22,892 — INFO — Pipeline started
+2026-02-09 03:49:22,892 — INFO — Starting GEO autism data fetch pipeline
+2026-02-09 03:51:11,957 — INFO — GEO autism pipeline completed successfully
+2026-02-09 03:51:11,959 — INFO — Starting DLBC cBioPortal fetch pipeline
+2026-02-09 03:51:12,742 — ERROR — DLBC fetch failed: 'DataFrame' object has no attribute 'applymap'
+2026-02-09 04:18:19,977 — INFO — Pipeline started
+2026-02-09 04:18:19,978 — INFO — Starting DLBC cBioPortal fetch pipeline
+2026-02-09 04:18:20,455 — INFO — DLBC fetch pipeline completed successfully
+2026-02-09 04:18:20,457 — INFO — Starting DLBC normalization
+2026-02-09 04:18:20,466 — INFO — DLBC normalization completed
+2026-02-09 04:18:20,466 — INFO — Pipeline finished successfully
+2026-02-09 04:18:58,726 — INFO — Pipeline started
+2026-02-09 04:18:58,726 — INFO — Starting GEO autism data fetch pipeline
+2026-02-09 04:20:47,637 — INFO — GEO autism pipeline completed successfully
+2026-02-09 04:20:47,640 — INFO — Starting DLBC cBioPortal fetch pipeline
+2026-02-09 04:20:48,219 — INFO — DLBC fetch pipeline completed successfully
+2026-02-09 04:20:48,219 — INFO — Starting DLBC normalization
+2026-02-09 04:20:48,227 — INFO — DLBC normalization completed
+2026-02-09 04:20:48,227 — INFO — Starting multi-omics integration
+2026-02-09 04:20:48,248 — INFO — Integration and ranking completed
+2026-02-09 04:20:48,250 — INFO — Pipeline finished successfully

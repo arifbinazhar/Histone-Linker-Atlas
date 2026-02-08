@@ -1,18 +1,15 @@
-
-genes:
-  - H1-1
-  - H1-2
-  - H1-3
-  - H1-4
-  - H1-5
-  - H1-10
+project:
+  name: HistoneLinker-Atlas
+  version: 1.0
 
 datasets:
-  autism_geo:
-    - GSE28521
 
-  gbm_tcga:
-    project: TCGA-GBM
+  autism:
+    expression_file: data/processed/autism/autism_vs_control_H1_stats.csv
 
+  dlbc:
+    alteration_file: data/processed/dlbc/dlbc_integrated_summary.csv
+    normalized_file: data/processed/dlbc/dlbc_integrated_summary_normalized.csv
 
-output_dir: data/processed
+integration:
+  output_file: data/processed/integration/ranked_histones.csv
