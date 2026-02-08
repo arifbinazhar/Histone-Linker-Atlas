@@ -1,253 +1,284 @@
-import requests
+"""
+cbio_fetch.py
+
+Fetch CNA and mutation data from cBioPortal GitHub DataHub using sparse checkout,
+store raw data in data/raw/,
+and processed outputs in data/processed/
+"""
+
 import pandas as pd
-import logging
+import subprocess
+import shutil
+from pathlib import Path
 import os
-from tqdm import tqdm
-import math
-
-# ---------------------------
-# Configuration
-# ---------------------------
-CBIO_BASE = "https://www.cbioportal.org/api"
-
-# Verified GBM studies with mutation + CNA data
-GBM_STUDIES = {
-    "TCGA_Nature2008": "gbm_tcga_pub",
-    "CPTAC_Cell2021": "gbm_cptac_2021",
-    "Columbia_NatMed2019": "gbm_columbia_2019"
-}
-
-# Linker histone gene family
-H1_GENES = [
-    "H1F0",
-    "HIST1H1A",
-    "HIST1H1B",
-    "HIST1H1C",
-    "HIST1H1D",
-    "HIST1H1E",
-    "H1FX"
-]
-
-HEADERS = {
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-}
-
-BATCH_SIZE = 150
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
-
-# ---------------------------
-# API Helpers
-# ---------------------------
-def get_profiles(study_id):
-    """Fetch all molecular profiles for a study"""
-    url = f"{CBIO_BASE}/molecular-profiles"
-    params = {"studyId": study_id}
-    r = requests.get(url, params=params, headers=HEADERS)
-    r.raise_for_status()
-    return r.json()
+import stat
+import time
+from data_fetchers.gene_map import H1_GENE_MAP
 
 
-def get_mutation_profile(study_id):
-    """Resolve mutation molecular profile belonging to study"""
-    profiles = get_profiles(study_id)
-    for p in profiles:
-        pid = p["molecularProfileId"].lower()
-        if study_id.lower() in pid and "mutations" in pid:
-            return p["molecularProfileId"]
-    raise RuntimeError(f"No mutation profile found for {study_id}")
+# -------------------------
+# CONFIG
+# -------------------------
+
+DATASET = "dlbc_tcga_pan_can_atlas_2018"
+
+REPO_URL = "https://github.com/cBioPortal/datahub.git"
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+RAW_DIR = PROJECT_ROOT / "data" / "raw" / DATASET
+PROCESSED_DIR = PROJECT_ROOT / "data" / "processed" / "dlbc"
+
+TEMP_DIR = PROJECT_ROOT / "datahub_temp"
+
+PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+
+H1_GENES = H1_GENE_MAP 
 
 
-def get_cna_profile(study_id):
-    """Resolve CNA/GISTIC molecular profile belonging to study"""
-    profiles = get_profiles(study_id)
-    for p in profiles:
-        pid = p["molecularProfileId"].lower()
-        if study_id.lower() in pid and ("cna" in pid or "gistic" in pid):
-            return p["molecularProfileId"]
-    raise RuntimeError(f"No CNA profile found for {study_id}")
+# [
+#     "HIST1H1A",
+#     "HIST1H1B",
+#     "HIST1H1C",
+#     "HIST1H1D",
+#     "HIST1H1E",
+#     "H1F0",
+#     "H1FX"
+# ]
 
 
-def get_sample_ids(study_id):
-    """Fetch sample IDs for a study"""
-    url = f"{CBIO_BASE}/studies/{study_id}/samples"
-    r = requests.get(url, headers=HEADERS)
-    r.raise_for_status()
-    return [s["sampleId"] for s in r.json()]
-
-
-def fetch_mutations_batch(profile_id, genes, sample_batch):
-    """POST mutation fetch"""
-    url = f"{CBIO_BASE}/molecular-profiles/{profile_id}/mutations/fetch"
-    payload = {
-        "geneSymbols": genes,
-        "sampleIds": sample_batch
-    }
-    r = requests.post(url, json=payload, headers=HEADERS)
-    r.raise_for_status()
-    return r.json()
-
-
-def fetch_cna_batch(profile_id, genes, sample_batch):
-    """POST CNA fetch"""
-    url = f"{CBIO_BASE}/molecular-profiles/{profile_id}/molecular-data/fetch"
-    payload = {
-        "geneSymbols": genes,
-        "sampleIds": sample_batch
-    }
-    r = requests.post(url, json=payload, headers=HEADERS)
-    r.raise_for_status()
-    return r.json()
-
-# ---------------------------
-# Main Pipeline
-# ---------------------------
-def run_gbm_alteration_pipeline(output_dir="data/processed/gbm"):
-    os.makedirs(output_dir, exist_ok=True)
-
-    mutation_records = []
-    cna_records = []
-
-    for label, study_id in GBM_STUDIES.items():
-        logging.info(f"Processing study: {label} ({study_id})")
-
+def safe_rmtree(path, retries=5, delay=1):
+    """
+    Safely remove directory on Windows by handling file locks.
+    """
+    def onerror(func, path, exc_info):
         try:
-            mut_profile = get_mutation_profile(study_id)
-            cna_profile = get_cna_profile(study_id)
+            os.chmod(path, stat.S_IWRITE)
+            func(path)
+        except Exception:
+            pass
 
-            logging.info(f"Using mutation profile: {mut_profile}")
-            logging.info(f"Using CNA profile: {cna_profile}")
+    for i in range(retries):
+        try:
+            shutil.rmtree(path, onerror=onerror)
+            return
+        except PermissionError:
+            time.sleep(delay)
 
-            samples = get_sample_ids(study_id)
-            logging.info(f"Samples found: {len(samples)}")
+    print(f"Warning: Could not fully remove {path}")
 
-            num_batches = math.ceil(len(samples) / BATCH_SIZE)
 
-            for i in tqdm(range(num_batches), desc=f"{label} batches"):
-                batch = samples[i * BATCH_SIZE:(i + 1) * BATCH_SIZE]
+# -------------------------
+# STEP 1 — Sparse checkout
+# -------------------------
 
-                # ---- MUTATIONS ----
-                try:
-                    mut_data = fetch_mutations_batch(mut_profile, H1_GENES, batch)
-                    for r in mut_data:
-                        mutation_records.append({
-                            "Study": label,
-                            "Study_ID": study_id,
-                            "Gene": r.get("geneSymbol"),
-                            "SampleID": r.get("sampleId"),
-                            "Protein_Change": r.get("proteinChange"),
-                            "Mutation_Type": r.get("mutationType"),
-                            "Variant_Classification": r.get("variantClassification"),
-                            "Functional_Impact": r.get("functionalImpactScore"),
-                            "Chromosome": r.get("chr"),
-                            "Start_Position": r.get("startPosition"),
-                            "End_Position": r.get("endPosition")
-                        })
-                except Exception as e:
-                    logging.error(f"Mutation batch {i+1} failed for {label}: {e}")
+def sparse_clone():
 
-                # ---- CNA ----
-                try:
-                    cna_data = fetch_cna_batch(cna_profile, H1_GENES, batch)
-                    for r in cna_data:
-                        val = r.get("value")
-                        if val is None:
-                            continue
+    if RAW_DIR.exists() and any(RAW_DIR.iterdir()):
+        print("Dataset already exists:", RAW_DIR)
+        return
 
-                        val = int(val)
-                        if val != 0:  # Only store altered states
-                            cna_records.append({
-                                "Study": label,
-                                "Study_ID": study_id,
-                                "Gene": r.get("geneSymbol"),
-                                "SampleID": r.get("sampleId"),
-                                "CNA_Value": val
-                            })
-                except Exception as e:
-                    logging.error(f"CNA batch {i+1} failed for {label}: {e}")
+    print("Cloning required dataset only using sparse checkout...")
 
-        except Exception as e:
-            logging.error(f"Failed processing study {label}: {e}")
+    if TEMP_DIR.exists():
+        safe_rmtree(TEMP_DIR)
 
-    # ---------------------------
-    # Convert to DataFrames
-    # ---------------------------
-    mut_df = pd.DataFrame(mutation_records)
-    cna_df = pd.DataFrame(cna_records)
+    subprocess.run([
+        "git", "clone",
+        "--filter=blob:none",
+        "--no-checkout",
+        REPO_URL,
+        str(TEMP_DIR)
+    ], check=True)
 
-    # ---------------------------
-    # Save Raw Files
-    # ---------------------------
-    mut_file = os.path.join(output_dir, "gbm_H1_mutations_raw.csv")
-    cna_file = os.path.join(output_dir, "gbm_H1_cna_raw.csv")
-
-    mut_df.to_csv(mut_file, index=False)
-    cna_df.to_csv(cna_file, index=False)
-
-    logging.info(f"Saved raw mutation data to {mut_file}")
-    logging.info(f"Saved raw CNA data to {cna_file}")
-
-    # ---------------------------
-    # Summaries
-    # ---------------------------
-    mut_summary = (
-        mut_df.groupby("Gene")
-        .agg(
-            Total_Mutations=("SampleID", "count"),
-            Unique_Mutated_Samples=("SampleID", "nunique"),
-            Studies_With_Mutations=("Study", "nunique"),
-            Missense=("Variant_Classification", lambda x: (x == "Missense_Mutation").sum()),
-            Truncating=("Variant_Classification", lambda x: x.isin(
-                ["Nonsense_Mutation", "Frame_Shift_Del", "Frame_Shift_Ins"]
-            ).sum())
-        .reset_index()
-    ) if not mut_df.empty else pd.DataFrame(
-        columns=["Gene", "Total_Mutations", "Unique_Mutated_Samples",
-                 "Studies_With_Mutations", "Missense", "Truncating"]
+    subprocess.run(
+        ["git", "sparse-checkout", "init", "--cone"],
+        cwd=TEMP_DIR,
+        check=True
     )
+
+    subprocess.run(
+        ["git", "sparse-checkout", "set",
+         f"public/{DATASET}"],
+        cwd=TEMP_DIR,
+        check=True
+    )
+
+    subprocess.run(
+        ["git", "checkout", "master"],
+        cwd=TEMP_DIR,
+        check=True
+    )
+
+    source = TEMP_DIR / "public" / DATASET
+
+    RAW_DIR.parent.mkdir(parents=True, exist_ok=True)
+
+    shutil.move(str(source), str(RAW_DIR))
+
+    safe_rmtree(TEMP_DIR)
+
+    print("Dataset stored at:", RAW_DIR)
+
+
+
+# -------------------------
+# STEP 2 — Load data
+# -------------------------
+
+def load_data():
+
+    cna_file = RAW_DIR / "data_cna.txt"
+    maf_file = RAW_DIR / "data_mutations.txt"
+
+    print("Loading CNA...")
+    cna = pd.read_csv(cna_file, sep="\t")
+
+    print("Loading Mutation...")
+    maf = pd.read_csv(
+        maf_file,
+        sep="\t",
+        comment="#",
+        low_memory=False
+    )
+
+    maf["Hugo_Symbol"] = maf["Hugo_Symbol"].astype(str).str.strip()
+
+    return cna, maf
+
+
+# -------------------------
+# STEP 3 — Process CNA
+# -------------------------
+
+def process_cna(cna):
+
+    cna = cna.set_index("Hugo_Symbol")
+
+    cna = cna.apply(pd.to_numeric, errors="coerce")
+
+    cna_h1 = cna.loc[cna.index.intersection(H1_GENES)]
+
+    cna_binary = cna_h1.applymap(
+        lambda x: 1 if abs(x) >= 1 else 0
     )
 
     cna_summary = (
-        cna_df.groupby("Gene")
-        .agg(
-            CNA_Events=("SampleID", "count"),
-            CNA_Altered_Samples=("SampleID", "nunique"),
-            Studies_With_CNA=("Study", "nunique")
-        )
+        cna_binary.sum(axis=1)
         .reset_index()
-    ) if not cna_df.empty else pd.DataFrame(
-        columns=["Gene", "CNA_Events", "CNA_Altered_Samples", "Studies_With_CNA"]
     )
 
-    # ---------------------------
-    # Integrated Summary
-    # ---------------------------
-    final = pd.merge(mut_summary, cna_summary, on="Gene", how="outer").fillna(0)
+    cna_summary.columns = [
+        "Gene",
+        "CNA_Altered_Samples"
+    ]
 
-    final["Total_Altered_Samples"] = (
-        final["Unique_Mutated_Samples"] + final["CNA_Altered_Samples"]
+    return cna_summary
+
+
+# -------------------------
+# STEP 4 — Process mutation
+# -------------------------
+
+def process_mutation(maf):
+
+    maf_h1 = maf[maf["Hugo_Symbol"].isin(H1_GENES)]
+
+    mutation_summary = (
+        maf_h1.groupby("Hugo_Symbol")
+        .agg(
+            Mutation_Count=("Tumor_Sample_Barcode", "count"),
+            Unique_Patients=("Tumor_Sample_Barcode", "nunique"),
+            Missense=("Variant_Classification",
+                      lambda x: (x == "Missense_Mutation").sum()),
+            Truncating=("Variant_Classification",
+                        lambda x: x.isin([
+                            "Nonsense_Mutation",
+                            "Frame_Shift_Del",
+                            "Frame_Shift_Ins",
+                            "Splice_Site"
+                        ]).sum())
+        )
+        .reset_index()
+        .rename(columns={"Hugo_Symbol": "Gene"})
+    )
+
+    return mutation_summary
+
+
+# -------------------------
+# STEP 5 — Integrate
+# -------------------------
+
+def integrate(cna_summary, mutation_summary):
+
+    final = pd.merge(
+        mutation_summary,
+        cna_summary,
+        on="Gene",
+        how="outer"
+    ).fillna(0)
+
+    final["Total_Altered"] = (
+        final["Unique_Patients"]
+        + final["CNA_Altered_Samples"]
     )
 
     final = final.sort_values(
-        ["Total_Altered_Samples", "Studies_With_CNA", "Studies_With_Mutations"],
+        "Total_Altered",
         ascending=False
     )
 
-    final_file = os.path.join(output_dir, "gbm_H1_alteration_summary.csv")
-    final.to_csv(final_file, index=False)
-
-    logging.info(f"Saved integrated alteration summary to {final_file}")
-
-    return mut_df, cna_df, final
+    return final
 
 
-# ---------------------------
-# Entry Point
-# ---------------------------
+# -------------------------
+# STEP 6 — Save outputs
+# -------------------------
+
+def save_outputs(cna, mutation, integrated):
+
+    cna_file = PROCESSED_DIR / "dlbc_cna_processed.csv"
+    mut_file = PROCESSED_DIR / "dlbc_mutation_processed.csv"
+    int_file = PROCESSED_DIR / "dlbc_integrated_summary.csv"
+
+    cna.to_csv(cna_file, index=False)
+    mutation.to_csv(mut_file, index=False)
+    integrated.to_csv(int_file, index=False)
+
+    print("\nSaved files:")
+    print(cna_file)
+    print(mut_file)
+    print(int_file)
+
+
+# -------------------------
+# MAIN
+# -------------------------
+
+def main():
+
+    sparse_clone()
+
+    cna, maf = load_data()
+
+    cna_summary = process_cna(cna)
+
+    mutation_summary = process_mutation(maf)
+
+    integrated = integrate(
+        cna_summary,
+        mutation_summary
+    )
+
+    save_outputs(
+        cna_summary,
+        mutation_summary,
+        integrated
+    )
+
+    print("\ncbio_fetch pipeline completed successfully.")
+
+
 if __name__ == "__main__":
-    logging.info("Starting GBM H1 alteration pipeline (Mutation + CNA)")
-    run_gbm_alteration_pipeline()
+    main()

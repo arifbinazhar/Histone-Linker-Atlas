@@ -1,0 +1,8 @@
+Gene,Mutation_Count,Unique_Patients,Missense,Truncating,CNA_Altered_Samples,Total_Altered
+HIST1H1E,16.0,10.0,11.0,1.0,11,21.0
+HIST1H1C,11.0,8.0,8.0,1.0,11,19.0
+H1FX,0.0,0.0,0.0,0.0,18,18.0
+HIST1H1B,4.0,4.0,3.0,0.0,12,16.0
+HIST1H1D,5.0,3.0,4.0,0.0,12,15.0
+HIST1H1A,0.0,0.0,0.0,0.0,11,11.0
+H1F0,0.0,0.0,0.0,0.0,5,5.0
