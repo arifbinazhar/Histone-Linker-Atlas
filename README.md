@@ -78,6 +78,8 @@ This pipeline is designed as an internal research support tool to assist experim
 
 ```
 
+![alt text](https://github.com/arifbinazhar/Histone-Linker-Atlas/blob/main/plots/dlbc_mutation_barplot.png)
+
 ## Reproducibility
 
 This pipeline ensures reproducibility through:
