@@ -3,6 +3,24 @@
 
 This project implements a reproducible bioinformatics pipeline to systematically map differential expression and genomic alterations of linker histone (H1 family) genes across disease contexts using primary transcriptomic (GEO) and cancer genomics (TCGA-GDC) datasets. The pipeline enables automated multi-omics integration to identify linker histones showing convergent evidence of dysregulation or alteration, providing a scalable data-mining framework to support hypothesis generation and experimental prioritization in chromatin biology and disease research.
 
+## Scientific Motivation
+
+Linker histones (H1 family) play a critical role in chromatin organization and gene regulation.
+Recent studies suggest their dysregulation may contribute to neurodevelopmental disorders and cancer.
+
+However, systematic analysis across disease datasets is lacking.
+
+This pipeline addresses this gap by:
+
+• Integrating transcriptomic and mutation datasets from GEO and TCGA/cBioPortal  
+• Identifying linker histones with consistent dysregulation  
+• Prioritizing candidates for experimental validation  
+
+This enables hypothesis generation for chromatin-driven disease mechanisms.
+
+
+
+
 ## Key Features
 
 - Automated ingestion of GEO transcriptomic datasets for phenotype-aware linker histone expression analysis
