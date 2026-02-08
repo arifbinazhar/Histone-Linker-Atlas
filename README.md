@@ -18,9 +18,6 @@ This pipeline addresses this gap by:
 
 This enables hypothesis generation for chromatin-driven disease mechanisms.
 
-
-
-
 ## Key Features
 
 - Automated ingestion of GEO transcriptomic datasets for phenotype-aware linker histone expression analysis
@@ -39,8 +36,27 @@ This enables hypothesis generation for chromatin-driven disease mechanisms.
 **Target Genes:**
 - H1F0, HIST1H1A, HIST1H1B, HIST1H1C, HIST1H1D, HIST1H1E, H1FX
 
+## Data Sources
+
+This pipeline integrates publicly available datasets:
+
+• GEO – transcriptomic datasets
+• cBioPortal – mutation and CNA data
+
+Data is automatically downloaded via API
+
 ## Pipeline Overview
 Disease → Dataset Fetching → Gene Filtering → Expression Analysis → Mutation Analysis → Evidence Integration → Report Generation
+
+## Pipeline Architecture
+
+data_fetchers/ → downloads datasets  
+expression/ → expression analysis  
+mutation/ → mutation analysis  
+integration/ → integrates multi-omics data  
+report/ → generates final candidate reports  
+utils/ → shared functions  
+
 
 ## Installation
 ```bash
