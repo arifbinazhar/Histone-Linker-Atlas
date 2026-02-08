@@ -91,7 +91,14 @@ This pipeline is designed as an internal research support tool to assist experim
 
 ```
 
+## Graphical Outputs
+
+Graph showing mutation frequency per histone gene in Diffuse Large B-Cell Lymphoma 
 ![alt text](https://github.com/arifbinazhar/Histone-Linker-Atlas/blob/main/plots/dlbc_mutation_barplot.png)
+
+
+Bar plot showing mean expression of the Histone H1 gene.
+![alt text](https://github.com/arifbinazhar/Histone-Linker-Atlas/blob/main/plots/histone_expression_barplot.png)
 
 ## Reproducibility
 
