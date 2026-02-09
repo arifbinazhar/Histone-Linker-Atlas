@@ -100,6 +100,13 @@ Graph showing mutation frequency per histone gene in Diffuse Large B-Cell Lympho
 Bar plot showing mean expression of the Histone H1 gene.
 ![alt text](https://github.com/arifbinazhar/Histone-Linker-Atlas/blob/main/plots/histone_expression_barplot.png)
 
+## Biological Interpretation 
+
+Based on our analysis we were able to identify that HIST1H1C (H1-2) was the highest-priority linker histone variant.
+This might suggest its central role in autism-associated chromatin dysregulation. 
+[Download the dataset CSV file](https://github.com/arifbinazhar/Histone-Linker-Atlas/blob/main/data/processed/integration/ranked_histones.csv)
+
+
 ## Reproducibility
 
 This pipeline ensures reproducibility through:
