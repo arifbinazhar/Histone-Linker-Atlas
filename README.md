@@ -103,8 +103,9 @@ Bar plot showing mean expression of the Histone H1 gene. <br><br>
 ## Biological Interpretation 
 
 Based on our analysis we were able to identify that **HIST1H1C (H1-2)** was the highest-priority linker histone variant.
-This might suggest its central role in autism-associated chromatin dysregulation. 
+This might suggest its central role in autism-associated chromatin dysregulation. This can be seen in the CSV file linked below.
 
+[Link to the CSV result](https://github.com/arifbinazhar/Histone-Linker-Atlas/blob/main/data/processed/integration/ranked_histones.csv)
 
 ## Reproducibility
 
