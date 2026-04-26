@@ -1,0 +1,59 @@
+project:
+  dataset: GSE236992
+  description: ATAC-seq chromatin accessibility after CHD8 hemizygous deletion in human induced neurons
+
+paths:
+  metadata: metadata/atac_samples_GSE236992.csv
+  raw_fastq_dir: data/raw/atac/GSE236992/fastq
+  trimmed_dir: results/atac/GSE236992/trimmed
+  aligned_dir: results/atac/GSE236992/aligned
+  filtered_dir: results/atac/GSE236992/filtered
+  qc_dir: results/atac/GSE236992/qc
+  peak_dir: results/atac/GSE236992/peaks
+  differential_dir: results/atac/GSE236992/differential_accessibility
+  annotation_dir: results/atac/GSE236992/annotation
+  integration_output: data/processed/integration/atac_histone_links_GSE236992.csv
+
+reference:
+  genome: hg38
+  bowtie2_index: /path/to/hg38/bowtie2/hg38
+  blacklist_bed: /path/to/ENCFF356LFX.hg38.blacklist.bed
+  tss_bed: /path/to/hg38_tss.bed
+  chrom_sizes: /path/to/hg38.chrom.sizes
+
+tools:
+  threads: 8
+  mapq: 30
+  macs2_qvalue: 0.05
+
+biology:
+  control_condition: control
+  case_condition: CHD8_deletion
+  linker_histone_genes:
+    - H1F0
+    - HIST1H1A
+    - HIST1H1B
+    - HIST1H1C
+    - HIST1H1D
+    - HIST1H1E
+    - H1FX
+  chromatin_autism_genes:
+    - CHD8
+    - ARID1B
+    - ADNP
+    - ASH1L
+    - CHD2
+    - CREBBP
+    - CTNNB1
+    - DNMT3A
+    - DYRK1A
+    - EHMT1
+    - KMT2A
+    - KMT2C
+    - KMT2D
+    - MECP2
+    - POGZ
+    - SETD5
+    - SUV420H1
+    - TBR1
+    - TRRAP

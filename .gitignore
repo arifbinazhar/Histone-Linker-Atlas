@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+
+# Large sequencing and genome browser files
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.bam
+*.bai
+*.sam
+*.bw
+*.bigWig
+*.bedGraph
+
+# ATAC-seq raw/intermediate data kept off GitHub
+data/raw/atac/
+results/atac/aligned/
+results/atac/bigwig/
+results/atac/**/aligned/
+results/atac/**/bigwig/

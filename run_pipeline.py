@@ -125,6 +125,8 @@ from data_fetchers.cbio_fetch import run_dlbc_pipeline
 # Import processing modules
 from integration.normalize_dlbc import normalize_dlbc
 from integration.rank_histones import run_ranking
+from integration.integrate_atac_histones import integrate_atac_histones
+from atac.summarize_atac_results import summarize as summarize_atac_results
 
 
 logger = setup_logger()
@@ -217,6 +219,34 @@ def run_integration(config):
 
 
 # -----------------------------
+# ATAC LIGHTWEIGHT PIPELINE
+# -----------------------------
+
+def run_atac_pipeline(config):
+
+    logger.info("Starting GSE236992 ATAC lightweight summary and integration")
+
+    try:
+
+        atac_config = "config/atac_config.yaml"
+
+        summarize_atac_results(atac_config)
+        integrate_atac_histones(atac_config)
+
+        logger.info("ATAC lightweight integration completed")
+
+    except FileNotFoundError as e:
+
+        logger.error(f"ATAC input missing: {e}")
+        raise
+
+    except Exception as e:
+
+        logger.error(f"ATAC integration failed: {e}")
+        raise
+
+
+# -----------------------------
 # MASTER CONTROLLER
 # -----------------------------
 
@@ -230,7 +260,7 @@ def main():
         "--disease",
         type=str,
         required=True,
-        choices=["autism", "dlbc", "integration", "all"],
+        choices=["autism", "dlbc", "integration", "atac", "all"],
         help="Pipeline stage to run",
     )
 
@@ -252,6 +282,10 @@ def main():
     elif args.disease == "integration":
 
         run_integration(config)
+
+    elif args.disease == "atac":
+
+        run_atac_pipeline(config)
 
     elif args.disease == "all":
 

@@ -1,0 +1,3 @@
+sample_id,sra_accession,condition,replicate,cell_type,genotype,layout,fastq_1,fastq_2,bam,peak_file
+CONTROL_REP1,FILL_FROM_GEO_SRA_RUN_TABLE,control,1,human induced neuron,CHD8 wildtype,PAIRED,data/raw/atac/GSE236992/fastq/CONTROL_REP1_1.fastq.gz,data/raw/atac/GSE236992/fastq/CONTROL_REP1_2.fastq.gz,results/atac/GSE236992/filtered/CONTROL_REP1.filtered.bam,results/atac/GSE236992/peaks/CONTROL_REP1_peaks.narrowPeak
+CHD8_DEL_REP1,FILL_FROM_GEO_SRA_RUN_TABLE,CHD8_deletion,1,human induced neuron,CHD8 hemizygous deletion,PAIRED,data/raw/atac/GSE236992/fastq/CHD8_DEL_REP1_1.fastq.gz,data/raw/atac/GSE236992/fastq/CHD8_DEL_REP1_2.fastq.gz,results/atac/GSE236992/filtered/CHD8_DEL_REP1.filtered.bam,results/atac/GSE236992/peaks/CHD8_DEL_REP1_peaks.narrowPeak
