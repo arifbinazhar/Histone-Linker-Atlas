@@ -195,6 +195,7 @@ def render_page(store: StudioStore, notice: str = "") -> str:
         for event in audit
     )
     notice_html = f"<div class='notice'>{html.escape(notice)}</div>" if notice else ""
+    provider_status = render_provider_status()
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -230,6 +231,7 @@ def render_page(store: StudioStore, notice: str = "") -> str:
 </header>
 <main>
   {notice_html}
+  {provider_status}
   <section class="panel">
     <h2>Upload & Configure</h2>
     <form action="/upload" method="post" enctype="multipart/form-data">
@@ -294,6 +296,22 @@ def render_issues(issues) -> str:
             f"<p>{html.escape(issue.message)}</p><p class='muted'>{html.escape(issue.suggestion)}</p></div>"
         )
     return "".join(rows)
+
+
+def render_provider_status() -> str:
+    provider = os.getenv("TRANSLATION_PROVIDER", "auto")
+    gemini_key = "configured" if os.getenv("GEMINI_API_KEY", "").strip() else "missing"
+    openai_key = "configured" if os.getenv("OPENAI_API_KEY", "").strip() else "missing"
+    gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    openai_model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+    return (
+        "<section class='panel'>"
+        "<b>Provider status</b>"
+        f"<p class='muted'>Default provider: {html.escape(provider)} · "
+        f"Gemini key: {gemini_key} ({html.escape(gemini_model)}) · "
+        f"OpenAI key: {openai_key} ({html.escape(openai_model)})</p>"
+        "</section>"
+    )
 
 
 def render_units(units) -> str:

@@ -44,22 +44,32 @@ class TranslationEngine:
     ) -> str:
         provider = self.config.provider
         errors: list[str] = []
+        gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
+        openai_key = os.getenv("OPENAI_API_KEY", "").strip()
 
-        if provider in {"auto", "gemini"} and os.getenv("GEMINI_API_KEY"):
+        if provider in {"auto", "gemini"} and gemini_key:
             try:
                 return self._translate_with_gemini(text, source_lang, target_lang, glossary, profile)
             except Exception as exc:
-                errors.append(f"Gemini: {exc.__class__.__name__}")
+                errors.append(f"Gemini: {exc}")
                 if provider == "gemini":
                     return fallback_with_reason(text, target_lang, glossary, errors)
+        elif provider == "gemini":
+            errors.append("Gemini: missing GEMINI_API_KEY")
+        elif provider == "auto":
+            errors.append("Gemini: no GEMINI_API_KEY")
 
-        if provider in {"auto", "openai"} and os.getenv("OPENAI_API_KEY"):
+        if provider in {"auto", "openai"} and openai_key:
             try:
                 return self._translate_with_openai(text, source_lang, target_lang, glossary, profile)
             except Exception as exc:
-                errors.append(f"OpenAI: {exc.__class__.__name__}")
+                errors.append(f"OpenAI: {exc}")
                 if provider == "openai":
                     return fallback_with_reason(text, target_lang, glossary, errors)
+        elif provider == "openai":
+            errors.append("OpenAI: missing OPENAI_API_KEY")
+        elif provider == "auto":
+            errors.append("OpenAI: no OPENAI_API_KEY")
 
         return fallback_with_reason(text, target_lang, glossary, errors)
 
@@ -177,7 +187,10 @@ def extract_gemini_text(data: dict) -> str:
 def fallback_with_reason(text: str, target_lang: str, glossary: list[GlossaryEntry], errors: list[str]) -> str:
     translated = enforce_glossary(local_fallback_translate(text, target_lang), glossary)
     if errors:
-        return f"{translated} [LLM fallback: {'; '.join(errors)}]"
+        reason = "; ".join(errors)
+        if len(reason) > 320:
+            reason = reason[:317] + "..."
+        return f"{translated} [LLM fallback: {reason}]"
     return translated
 
 
