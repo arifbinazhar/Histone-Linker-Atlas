@@ -7,6 +7,7 @@ from .qa import analyze_source_quality
 from .storage import StudioStore
 from .tm import find_translation_candidates
 from .translator import TranslationEngine
+from .translator import TranslatorConfig
 
 
 def prepare_translation_units(
@@ -17,6 +18,7 @@ def prepare_translation_units(
     domain: str,
     profile: StyleProfile,
     auto_translate: bool = True,
+    provider: str = "auto",
 ) -> list[TranslationUnit]:
     glossary = store.list_glossary(source_lang, target_lang, domain)
     memories = store.get_memories(source_lang, target_lang, domain)
@@ -25,7 +27,7 @@ def prepare_translation_units(
     for issue in issues:
         issues_by_segment[issue.segment_id].append(issue)
 
-    engine = TranslationEngine()
+    engine = TranslationEngine(TranslatorConfig(provider=provider))
     units: list[TranslationUnit] = []
     for segment in segments:
         candidates = find_translation_candidates(segment.text, memories)
@@ -52,4 +54,3 @@ def prepare_translation_units(
             unit.status = SegmentStatus.MACHINE_TRANSLATED
         units.append(unit)
     return units
-

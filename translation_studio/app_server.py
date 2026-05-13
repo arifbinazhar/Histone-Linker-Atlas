@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import html
 import io
+import os
 import sys
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -12,6 +13,23 @@ ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
+
+
+def load_env_file(path: Path) -> None:
+    if not path.exists():
+        return
+    for raw_line in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+load_env_file(ROOT / ".env")
 
 from translation_studio.models import GlossaryEntry, SegmentStatus
 from translation_studio.parsing import parse_uploaded_file
@@ -53,6 +71,7 @@ class TranslationStudioHandler(BaseHTTPRequestHandler):
         source_lang = fields.get("source_lang", "English")
         target_lang = fields.get("target_lang", "Spanish")
         domain = fields.get("domain", "General") or "General"
+        provider = fields.get("provider", os.getenv("TRANSLATION_PROVIDER", "auto")).lower()
         profile_name = fields.get("profile", "Enterprise Formal")
         profile = next((item for item in self.store.list_profiles() if item.name == profile_name), self.store.list_profiles()[0])
         uploaded = files.get("document")
@@ -64,7 +83,9 @@ class TranslationStudioHandler(BaseHTTPRequestHandler):
             segments = parse_uploaded_file(io.BytesIO(uploaded["content"]), uploaded["filename"])
             glossary = self.store.list_glossary(source_lang, target_lang, domain)
             issues = analyze_source_quality(segments, glossary)
-            units = prepare_translation_units(segments, self.store, source_lang, target_lang, domain, profile, auto_translate=True)
+            units = prepare_translation_units(
+                segments, self.store, source_lang, target_lang, domain, profile, auto_translate=True, provider=provider
+            )
             STATE.update({
                 "segments": segments,
                 "issues": issues,
@@ -72,6 +93,7 @@ class TranslationStudioHandler(BaseHTTPRequestHandler):
                 "source_lang": source_lang,
                 "target_lang": target_lang,
                 "domain": domain,
+                "provider": provider,
             })
             self.respond(render_page(self.store, f"Parsed {len(segments)} segments and prepared {len(units)} translations."))
         except Exception as exc:
@@ -156,6 +178,15 @@ def render_page(store: StudioStore, notice: str = "") -> str:
     issues = STATE.get("issues", [])
     audit = store.audit_events(20)
     target_options = "".join(f"<option>{lang}</option>" for lang in LANGUAGES)
+    provider_options = "".join(
+        f"<option value='{value}'>{label}</option>"
+        for value, label in [
+            ("auto", "Auto: Gemini, OpenAI, Local"),
+            ("gemini", "Gemini only"),
+            ("openai", "OpenAI only"),
+            ("local", "Local draft only"),
+        ]
+    )
     profile_options = "".join(f"<option>{html.escape(profile.name)}</option>" for profile in profiles)
     issue_html = render_issues(issues)
     unit_html = render_units(units)
@@ -208,7 +239,10 @@ def render_page(store: StudioStore, notice: str = "") -> str:
         <div><label>Target language</label><select name="target_lang">{target_options}</select></div>
         <div><label>Domain</label><input name="domain" value="General"></div>
       </div>
-      <p><label>Style profile</label><select name="profile">{profile_options}</select></p>
+      <div class="grid">
+        <div><label>Provider</label><select name="provider">{provider_options}</select></div>
+        <div><label>Style profile</label><select name="profile">{profile_options}</select></div>
+      </div>
       <button type="submit">Parse, QA, Match TM, and Translate</button>
     </form>
   </section>
@@ -338,4 +372,3 @@ def run(host: str = "127.0.0.1", port: int = 8501) -> None:
 
 if __name__ == "__main__":
     run()
-

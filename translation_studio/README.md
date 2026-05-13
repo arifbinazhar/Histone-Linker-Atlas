@@ -65,18 +65,23 @@ streamlit run app.py
 
 ## Optional LLM Setup
 
-The app works without an API key, but production-quality translation requires an LLM.
+The app works without an API key, but production-quality translation requires an LLM. It supports OpenAI and Gemini.
 
 1. Copy `.env.example` to `.env`.
-2. Set `OPENAI_API_KEY`.
-3. Optionally set `OPENAI_MODEL`.
+2. Set either `GEMINI_API_KEY`, `OPENAI_API_KEY`, or both.
+3. Choose `TRANSLATION_PROVIDER=auto`, `gemini`, `openai`, or `local`.
 
 ```env
-OPENAI_API_KEY=sk-your-key
+TRANSLATION_PROVIDER=auto
+
+GEMINI_API_KEY=your-gemini-key
+GEMINI_MODEL=gemini-2.5-flash
+
+OPENAI_API_KEY=your-openai-key
 OPENAI_MODEL=gpt-4.1-mini
 ```
 
-When no API key is present, the app uses a deterministic local fallback translator. That fallback is useful for demos and testing the workflow, but it is not intended to replace a real translation model.
+In `auto` mode, the app tries Gemini first when `GEMINI_API_KEY` exists, then OpenAI when `OPENAI_API_KEY` exists, then the deterministic local fallback translator. The fallback is useful for demos and testing the workflow, but it is not intended to replace a real translation model.
 
 ## Bilingual Import Format
 

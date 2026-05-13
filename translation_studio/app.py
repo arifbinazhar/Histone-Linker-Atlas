@@ -66,6 +66,7 @@ def main() -> None:
         profile_names = [profile.name for profile in profiles]
         selected_profile_name = st.selectbox("Style profile", profile_names)
         profile = next(profile for profile in profiles if profile.name == selected_profile_name)
+        provider = st.selectbox("LLM provider", ["auto", "gemini", "openai", "local"], index=0)
         auto_translate = st.toggle("Translate new segments automatically", value=True)
 
     tab_upload, tab_review, tab_memory, tab_audit = st.tabs(["Upload & QA", "Translate & Approve", "Memory & Glossary", "Audit Trail"])
@@ -95,7 +96,14 @@ def main() -> None:
             if st.button("Run TM matching and translation", type="primary"):
                 with st.spinner("Searching translation memory and translating new segments..."):
                     st.session_state["units"] = prepare_translation_units(
-                        segments, store, source_lang, target_lang, domain, profile, auto_translate
+                        segments,
+                        store,
+                        source_lang,
+                        target_lang,
+                        domain,
+                        profile,
+                        auto_translate,
+                        provider,
                     )
             units = get_state("units", [])
             if units:
