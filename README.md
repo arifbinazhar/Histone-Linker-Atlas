@@ -3,6 +3,15 @@
 
 This project implements a reproducible bioinformatics pipeline to systematically map **differential expression** and **genomic alterations** of linker histone (H1 family) genes across disease contexts using primary transcriptomic (*GEO*) and cancer genomics (*cBioPortal*) datasets. The pipeline enables automated multi-omics integration to identify linker histones showing convergent evidence of dysregulation or alteration, providing a scalable data-mining framework to support hypothesis generation and experimental prioritization in chromatin biology and disease research.
 
+
+# Key Contributions
+
+| Name | Email | LinkedIn |
+| :--- | :--- | :--- |
+| **Arif Bin Azhar** | [arifbinazhar03@gmail.com](mailto:arifbinazhar03@gmail.com) | [Profile](https://www.linkedin.com/in/arif-bin-azhar) |
+| **Mohd Khubaib** | [mohdkhubaib886@gmail.com](mailto:mohdkhubaib886@gmail.com) | [Profile](https://www.linkedin.com/in/mohdkhubaib) |
+
+
 ## Scientific Motivation
 
 Linker histones (H1 family) play a critical role in chromatin organization and gene regulation.
